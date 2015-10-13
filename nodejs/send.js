@@ -4,7 +4,7 @@
 var osc = require('osc'),
     udpPort = new osc.UDPPort({
         localAddress: "0.0.0.0",    // "128.0.0.1" works for localhost, also
-        localPort: 54344            // this will be the port in the "udpsend" in Max -- port you SEND TO.
+        localPort: 54344            // this will be the port in the "udpsend" in Max -- port Max SENDS TO.
     });
 
 /// open the port:
@@ -30,7 +30,7 @@ udpPort.send({
             /envelope/line : [1., 20, 0., 1000]
         -- see the o.display in the example Max patch
     */
-}, "127.0.0.1", 54345);     // note this port here -- this is the port we're sending to -- udpreceive in Max
+}, "127.0.0.1", 54345);     // note this port here -- this is the port NODE sends to -- udpreceive in Max
 
 /// Receive an OSC Bundle (in case you need to send data to your Node server):
 udpPort.on("bundle", function (oscBundle) {
