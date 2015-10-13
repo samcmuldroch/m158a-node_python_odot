@@ -4,12 +4,9 @@
 
 Sources, might actually be the same by now, followed links BLINDLY from StackOverflow after realizing I have no idea which Python kids think is cool these days:
 
-[Python 2 lot get this](https://trac.v2.nl/wiki/pyOSC)
-[Python 3 lot get this](https://github.com/ptone/pyosc)
+[Python2 sources](https://trac.v2.nl/wiki/pyOSC) | [Python 3 sources](https://github.com/ptone/pyosc)
 
-(Lot means, like "all y'all" or something.)
-
-Note that BOTH are included in this REPO, just listing sources. And as of tonight's test, I got the trivial Python 3 example to execute with Python 2.7.10 without any issues....
+Note that BOTH are included in this repo. And as of tonight's test, I got the trivial Python 3 example to execute with Python 2.7.10 without any issues....
 
 ### Usage:
 
@@ -28,4 +25,4 @@ python send.py
 
 We do have our set of bindings, but they're rather unfriendly right now (e.g. no way to install them automatically, for example) and I don't feel comfortable asking my students to test my software -- that's rather unethical, imo. But if you really want it, you can bug me about it. I also can't remember if I tested it thoroughly against Py2 / Py3 nonsense, though I remember cursing about that, vaguely.
 
-### P.S. Python 3 is **superior**.
+### P.S. Python 3 is *superior*.
