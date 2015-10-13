@@ -19,12 +19,12 @@ You need Node installed. That comes with `npm` -- which used to stand for Node P
 The `osc` module appears to be the best supported -- I have no way of testing on Windows at the moment. If it doesn't work, try to find another OSC library that does...
 
 ```
-cd node
+cd nodejs
 npm install osc
 node send.js
 ```
 
-Note that I did copy/paste the example code that makes dot bundles sent out of Max print to a Node console -- see the code for `send.js` for that.
+Note that I did copy/paste the example code that makes odot bundles sent out of Max print to a Node console -- see the code for `send.js` for that.
 
 ### Python
 
