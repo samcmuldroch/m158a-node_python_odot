@@ -1,0 +1,23 @@
+HOW TO USE:
+
+1. Open "OPEN_ME" in max.
+2. Command Line Instructions:
+	cd python
+	cd python2
+	python imbd.py "Insert Your Movie Title Here"
+
+Notes about Movie Titles:
+--Different Movie Titles will produce different results based on genre and rating
+--If a movie has multiple genres the genre that the music will play on will be based on will be the one that comes first alphabetically. 
+
+Suggested Commans To Try:
+python imbd.py "Saving Christmas"
+python imbd.py "The Notebook"
+python imbd.py "The Godfather"
+python imbd.py "Django Unchained"
+python imbd.py "Up"
+python imbd.py "Cinderella"
+python imbd.py "The Third Man"
+
+
+***NOTE -- fully working on a Windows computer with python 2; hopefully workable on any computer***
