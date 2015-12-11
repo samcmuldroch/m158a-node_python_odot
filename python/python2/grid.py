@@ -10,6 +10,91 @@
 """
 import pygame
 from pygame.locals import *
+
+import os
+import sys
+import re
+import urllib
+import urlparse
+import time
+import timeit
+from mechanize import Browser
+from bs4 import BeautifulSoup
+from OSC import OSCClient, OSCBundle
+from PIL import Image
+
+pygame.init()
+
+#error noise should be based on the frequency
+#implement combo
+#playing multiple notes at same time (need to play each note quieter)
+#figure-out notes for a song
+#possibly have 3 differen't song options
+
+octave = 1.0
+pianoClient1 = OSCClient()
+pianoClient2 = OSCClient()
+pianoClient3 = OSCClient()
+pianoClient4 = OSCClient()
+pianoClient5 = OSCClient()
+envelopeList = [1., 20, 0., 1000]
+pianoClient1.connect(("localhost", 54310))
+pianoClient2.connect(("localhost", 54320))
+pianoClient3.connect(("localhost", 54330))
+pianoClient4.connect(("localhost", 54340))
+pianoClient5.connect(("localhost", 54350))
+
+### Initial Ding Bundle:
+initialDingClient = OSCClient()
+initialDingClient.connect(("localhost", 54345))
+print("Turning on")
+initialDing = OSCBundle()
+initialDing.append({'addr': "/frequency", 'args':[440.]})
+initialDing.append({'addr': "/envelope/line", 'args': [1., 20, 0., 1000]})
+initialDingClient.send(initialDing)
+
+
+
+keyboardToNoteDictionary = {'w' : 'C#/Db', 'e' : 'D#/Eb', 'u' : 'F#/Gb', 'i' : 'G#/Ab', 'o' : 'A#/Bb', 'a' : 'C', 's' : 'D', 'd' : 'E', 'f' : 'F', 'k' : 'G', 'l' : 'A', ';' : 'B', '1' : 'Octave Up', '2' : 'Octave Down'}
+keyboardToFrequencyDictionary = {'w' : 277.18, 'e' : 311.13, 'u' : 369.99, 'i' : 415.30, 'o' : 466.16, 'a' : 261.63, 's' : 293.66, 'd' : 329.63, 'f' : 349.23, 'k' : 392.00, 'l' : 440.00, ';' : 493.88}
+numberToNoteDictionary = {1 : 'a', 2 : 'w', 3 : 's', 4 : 'e', 5 : 'd', 6 : 'f', 7 : 'u', 8 : 'i', 9 : 'o', 10 : 'k', 11 : 'l', 12 : ';'}
+
+print(keyboardToNoteDictionary)
+
+def playNote(key, row, noteindex, good, length):
+    note = numberToNoteDictionary[key]
+    frequency = keyboardToFrequencyDictionary[note]
+    currentNote = OSCBundle()
+    #USE LENGTH TO DETERMINE AMPLITUDE SO IT DOESNT SOUND SHITTY PLAYING ALL THE NOTES AT ONCE
+    #print(row)
+    envelopeList[0] = 1/(10-row)
+    if good:
+        currentNote.append({'addr': "/frequency", 'args':[frequency * octave]})
+        currentNote.append({'addr': "/envelope/line", 'args': envelopeList})
+    else:
+        currentNote.append({'addr': "/frequency", 'args':[frequency * octave]})
+        currentNote.append({'addr': "/envelope/line", 'args': envelopeList})
+    if noteindex == 1:
+        pianoClient1.send(currentNote)
+    if noteindex == 2:
+        pianoClient2.send(currentNote)
+    if noteindex == 3:
+        pianoClient3.send(currentNote)
+    if noteindex == 4:
+        pianoClient4.send(currentNote)
+    if noteindex == 5:
+        pianoClient5.send(currentNote)
+
+def playError():
+    errorClient = OSCClient()
+    errorClient.connect(("localhost", 54200))
+    error = OSCBundle()
+    error.append({'addr': "/amplitude", 'args':[1]})
+    durationOfError = 1000
+    error.append({'addr': "/startValue", 'args': ['start', durationOfError]})
+    errorClient.send(error)
+
+
  
 # Define some colors
 BLACK = (0, 0, 0)
@@ -153,12 +238,12 @@ while not done:
         for column in range(12):
             color = WHITE
             newKeysClicked = []
+            keyIndex = 1
             for key in keysClicked:
                 if grid[row][column] == key:
-                    print("playing key")
-                    print(row)
-                    #PLAY THAT NOTE WHERE ROW 9 IS GOOD NEWS AND ROW 0 IS BAAD NEWS
+                    playNote(key, row, keyIndex, True, len(keysClicked))
                     grid[row][column] = 0
+                    keyIndex += 1
                 else:
                     newKeysClicked.append(key)
             keysClicked = newKeysClicked
@@ -189,6 +274,8 @@ while not done:
             if row == 9:
                 #something important about top row
                 row1 = 0
+                if grid[row][column] > 0:
+                    playError()
             else:
                 row1 = row + 1
                 newgrid[row1][column] = grid[row][column]
@@ -199,10 +286,10 @@ while not done:
                               WIDTH,
                               HEIGHT])
 
+    keyIndexx = 1
     for key in newKeysClicked:
-        print("you fucked up")
-        #PLAY THAT KEY AS A TERRIBLE NOISE AT THE SAME TIME BC SOMEONE REALLY FUCKED UP
-            
+        playNote(key, -1, keyIndexx, False, len(newKeysClicked))
+        keyIndexx += 1
 
     musicGridRow += 1
     if musicGridRow >= len(musicGrid)-1:
@@ -221,4 +308,15 @@ while not done:
  
 # Be IDLE friendly. If you forget this line, the program will 'hang'
 # on exit.
+print('APPLAUSE')
+#applause based on rating
+endingClient = OSCClient()
+endingClient.connect(("localhost", 54300))
+ending = OSCBundle()
+rating = 10 #RATING SHOULD BE BASED ON COMBO SCORE SHOULD BE NUMBER BETWEEN 1 AND 10
+ending.append({'addr': "/amplitude", 'args':[rating/10]})
+durationOfApplause = ((10 - rating) / 10) * 6000
+ending.append({'addr': "/startValue", 'args': ['start', durationOfApplause]})
+endingClient.send(ending)
+
 pygame.quit()

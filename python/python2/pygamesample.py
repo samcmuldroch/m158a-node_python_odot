@@ -18,8 +18,40 @@ import pygame
 from pygame.locals import *
 from sys import exit
 import random
+import os
+import sys
+import re
+import urllib
+import urlparse
+import time
+import timeit
+from mechanize import Browser
+from bs4 import BeautifulSoup
+from OSC import OSCClient, OSCBundle
+from PIL import Image
 
 pygame.init()
+
+octave = 1.0
+pianoClient1 = OSCClient()
+pianoClient2 = OSCClient()
+pianoClient3 = OSCClient()
+envelopeList = [1., 20, 0., 1000]
+pianoClient1.connect(("localhost", 54310))
+pianoClient2.connect(("localhost", 54320))
+pianoClient3.connect(("localhost", 54320))
+
+keyboardToNoteDictionary = {'w' : 'C#/Db', 'e' : 'D#/Eb', 'u' : 'F#/Gb', 'i' : 'G#/Ab', 'o' : 'A#/Bb', 'a' : 'C', 's' : 'D', 'd' : 'E', 'f' : 'F', 'k' : 'G', 'l' : 'A', ';' : 'B', '1' : 'Octave Up', '2' : 'Octave Down'}
+keyboardToFrequencyDictionary = {'w' : 277.18, 'e' : 311.13, 'u' : 369.99, 'i' : 415.30, 'o' : 466.16, 'a' : 261.63, 's' : 293.66, 'd' : 329.63, 'f' : 349.23, 'k' : 392.00, 'l' : 440.00, ';' : 493.88}
+
+print(keyboardToNoteDictionary)
+
+def playNote(note, noteindex):
+    frequency = Music.keyboardToFrequencyDictionary[note]
+    currentNote = OSCBundle()
+    currentNote.append({'addr': "/frequency", 'args':[frequency * octave]})
+    currentNote.append({'addr': "/envelope/line", 'args': envelopeList})
+    pianoClient1.send(currentNote)
 
 screen=pygame.display.set_mode((640,480),0,32)
 pygame.display.set_caption("Pong Pong!")
