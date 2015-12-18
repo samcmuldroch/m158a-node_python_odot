@@ -14,19 +14,10 @@ from bs4 import BeautifulSoup
 from OSC import OSCClient, OSCBundle
 from PIL import Image
 
-#FIX THE GOING UP TO THE NEXT OCTAVE
-#error noise should be based on the frequency
-#implement combo
-#playing multiple notes at same time (need to play each note quieter)
-#figure-out notes for a song
-#possibly have 3 differen't song options
-#have actual song playing in background which gets quieter/louder depending on current score
-
-
 print("Enter the Song you would like to play.")
-print("1--Easy Song")
-print("2--Medium Song")
-print("3--Difficult Song")
+print("1--Easy Song (C Scale)")
+print("2--Medium Song (Mary Had a Little Lamb)")
+print("3--Difficult Song (The Entertainer)")
 whichKeyboard = "False"
 while True:
     whichKeyboard = raw_input("Enter the key corresponding to which song you want to play (NONE if you would like quit): ")
@@ -205,9 +196,9 @@ def playNote(key, row, noteindex, good, length, combo):
     #USE LENGTH TO DETERMINE AMPLITUDE SO IT DOESNT SOUND SHITTY PLAYING ALL THE NOTES AT ONCE
     #print(row)
     if row == 8 or row == 9:
-        envelopeList[0] = 1
+        envelopeList[0] = 0.8
     else:
-        envelopeList[0] = 0.5 + 0.5*(row/8)
+        envelopeList[0] = 0.3 + 0.5*(row/8)
     if good:
         currentNote.append({'addr': "/frequency", 'args':[frequency * octave]})
         currentNote.append({'addr': "/envelope/line", 'args': envelopeList})
@@ -226,15 +217,17 @@ def playNote(key, row, noteindex, good, length, combo):
         pianoClient5.send(currentNote)
     return combo
 
-def playError():
+def playError(frequency):
     print("Oops!")
     combo = 0
     errorClient = OSCClient()
     errorClient.connect(("localhost", 54200))
+    duration = 260
+    playList = ['start', 0, duration, 0]
+    playList[3] = (duration * 261.63) / (frequency * octave)
     error = OSCBundle()
-    error.append({'addr': "/startValue", 'args': ['start']})
+    error.append({'addr': "/startValue", 'args': playList})
     errorClient.send(error)
-
 
  
 # Define some colors
@@ -314,58 +307,98 @@ if whichKeyboard == "1":
     musicGrid = [
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,6,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,10,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
-        [0,0,0,0,0,5,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,11,0,13,0],
-        [0,0,0,0,0,0,0,0,0,0,11,0,0,14],
-        [0,0,0,0,0,5,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,11,0,0,13],
-        [0,0,0,0,0,0,0,0,0,0,11,0,0,14],
-        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
-        [0,0,0,0,0,5,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,6,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
-        [0,0,0,0,0,5,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,6,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     ]
-    maxCombo = 17
+    maxCombo = 9
 if whichKeyboard == "2":
-    musicGrid = []
+    musicGrid = [
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,10,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,13,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,14],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,10,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,0],
+        [0,0,0,0,0,0,0,0,0,0,11,0,0,0],
+        [0,0,0,0,0,0,0,0,0,10,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    ]
+    maxCombo = 31
 if whichKeyboard == "3":
     musicGrid = [
-        [1,0,0,4,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        [1,0,0,4,0,0,0,0,0,10,11,12,0,0],
         [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,4,0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
-        [0,0,0,4,0,0,0,0,0,0,11,0,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,14],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,14],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,14],
         [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
-        [1,0,0,4,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,6,7,0,0,0,0,0,0,0],
-        [1,1,2,3,0,0,0,0,0,0,0,0,0,0],
-        [1,1,2,3,0,0,0,0,0,0,0,12,0,0],
-        [1,0,0,3,0,0,0,0,0,0,0,0,0,0],
-        [0,0,2,3,0,0,0,0,0,0,0,0,0,0],
-        [0,1,2,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0,0,0,0,13,14],
-        [1,0,2,0,0,0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,8,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,8,0,0,0,0,0,0],
-        [1,2,3,4,5,6,7,8,9,10,11,12,0,0], #LAST LINE ACTUALLY REACHED
-        [0,0,0,0,0,0,0,8,0,0,0,0,0,0,0,0]
+        [0,0,0,4,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,14],
+        [0,0,3,0,0,0,0,0,0,0,0,0,13,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,4,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,14],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,14],
+        [1,0,0,0,0,0,0,0,0,0,0,0,13,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,14],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,4,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,3,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,5,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,12,0,14],
+        [0,0,3,0,0,0,0,0,0,0,0,0,13,0],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     ]
+    maxCombo = 56
 
 musicGridRow = 0
  
@@ -475,6 +508,9 @@ while not done:
                 color = LIGHTGREEN
                 keyy = '2'
             if row == 9:
+                if grid[row][column] > 0:
+                    print("Oh no! You missed a note!")
+                    combo = 0
                 row1 = 0
             else:
                 row1 = row + 1
@@ -483,7 +519,14 @@ while not done:
 
     keyIndexx = 1
     for key in newKeysClicked:
-        playError()
+        note = numberToNoteDictionary[key]
+        if key == 13 or key == 14:
+            break 
+        elif note:
+            frequency = keyboardToFrequencyDictionary[note]
+            playError(frequency)
+        else:
+            playError(261.63)
 
     musicGridRow += 1
     if musicGridRow >= len(musicGrid)-1:
@@ -504,12 +547,13 @@ while not done:
 # on exit.
 print('APPLAUSE')
 if maxCombo == 0:
-    maxCombo = combo
+    maxCombo = 5
+    combo = 1
 #applause based on rating
 endingClient = OSCClient()
 endingClient.connect(("localhost", 54300))
 ending = OSCBundle()
-ending.append({'addr': "/amplitude", 'args':[combo/maxCombo]})
+ending.append({'addr': "/amplitude", 'args':[(0.7*combo/maxCombo) + 0.3]})
 durationOfApplause = ((maxCombo - combo) / maxCombo) * 6000
 ending.append({'addr': "/startValue", 'args': ['start', durationOfApplause]})
 endingClient.send(ending)
