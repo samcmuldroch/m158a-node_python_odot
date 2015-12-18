@@ -1,44 +1,51 @@
-# Sending OSC to Max
+Sydney McMuldroch
+Music 158A
+12/18/15
+Final Project
 
-Disclaimer -- it's super late now, but I think a lot of you are interested in this, so here goes...
+SYDNEY'S MUSICAL KEYBOARD VIDEOGAME FINAL PROJECT
 
-### IMPORTANT
+Instalations Required
+- Python 2.7.9
+- Pip 1.5.6 (not sure how much this matters, but for reference this is what I used)
+- Pygame compatible with Python 2.7.9
+      ---HOW TO INSTALL PYGAME FOR A MAC (Disclaimer: I installed it on my Windows so this is only a guess, I haved actually tested how to install pygame on a mac)
+            --> open terminal
+        	--> run the following commands
+        			brew install sdl sdl_image sdl_mixer sdl_ttf portmidi 
+					sudo pip install hg+http://bitbucket.org/pygame/pygame
+			--> IF THAT FAILS
+			     --> Maybe try installing using pip?
+			           pip install hg+http://bitbucket.org/pygame/pygame
+			--> SORRY IF NONE OF THAT WORKS! I think it should!!
 
-You don't need to use these modules specifically. I tested the basics for you, but if you Google things like Node OSC or Python OSC you will find a lot of libraries. You can try out other ones if these don't work for you.
 
-### MAX
+How To Run the Program
+1. Open the OPEN_ME file in Max
+2. Turn on the Speaker in Max
+3. Run the following comands
+		cd python
+		cd pyhon2
+		python grid.py
 
-Please open `OPEN_ME.maxpat` before doing anything else. 
 
-Seriously, if I get one email about "What should I open in Max" Imma ban you 4 life. 
+Tips on Game Play
+--The keys displaying on your screen are to be clicked when they reach the bottom row of the grid
+--If you don't click the key before it reaches the bottom of your screen all your combo points will be set to 0
+--If you click a key not currently on the screen a nasty error will play
+--The closer you can play the key to the bottom of the screen the better you did and therefore the louder that note will play
+--Start with playing game 1 as it is easiest, just a simple C Scale
+--If you are really struggling go into the code of grid.py and find the clock.tick line
+		--Setting the clock.tick line to 2 will slow it down to make it easier
+		--Setting the clock.tick line to 1 will slow it down even further to make it super easy
+--The louder the applause the better you did, good luck and hope you enjoyed!!!!!
 
-### Node
 
-You need Node installed. That comes with `npm` -- which used to stand for Node Package Manager but I've read that it doesn't anymore... Computer Scientists of the future, please try to keep it real and stop with this nonsense. 
 
-The `osc` module appears to be the best supported -- I have no way of testing on Windows at the moment. If it doesn't work, try to find another OSC library that does...
 
-```
-cd nodejs
-npm install osc
-node send.js
-```
+Props to Ilya for all the starter files on sending code from python to Max!
 
-Note that I did copy/paste the example code that makes odot bundles sent out of Max print to a Node console -- see the code for `send.js` for that.
 
-### Python
 
-One thing I forgot about Python is how exciting it is to answer a students' question about a Python library without knowing if you need Python 2 or Python 3. COMPUTER SCIENTISTS, YO, LET'S TRY TO KEEP IT REAL!
 
-Anyway, this pyOSC thing does the trick, though as you can see I just copy/pasted OSC.py in both python2 and python3 folders...
 
-```
-cd python/python3
-python send.py
-```
-
-Read the readme in `/python` for stuffs.
-
-### SUMMARY
-
-Let's try to keep it real for reals.
